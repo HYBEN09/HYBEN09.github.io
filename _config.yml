@@ -18,9 +18,7 @@ timezone: Asia/Seoul
 # jekyll-seo-tag settings › https://github.com/jekyll/jekyll-seo-tag/blob/master/docs/usage.md
 # ↓ --------------------------
 
-title: HYEBEN's Tech Blog
-
-sidebar_title: HYEBEN's Dev
+title: HYEBEN's Dev
 
 tagline: 배운 것 들을 기록하는 공간 # it will display as the sub-title
 
