@@ -1,7 +1,7 @@
 ---
 title: useEffect의 의존성 배열
 author: hyebeen
-date: 2023-09-22 16:14:00 +0800
+date: 2023-09-26 16:14:00 +0800
 categories: [React, Hooks]
 tags: [hooks, useEffect]
 image: /assets/img/posts/react.jpeg
