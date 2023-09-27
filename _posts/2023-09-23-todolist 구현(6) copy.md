@@ -1,0 +1,180 @@
+---
+title: TodoList 구현해보기 (7) - custom HOOK
+author: hyebeen
+date: 2023-09-24 21:52:00 +0800
+categories: [React, TodoList]
+tags: [react, hook]
+image: /assets/img/posts/react.jpeg
+---
+
+# Custom HOOK 구현
+
+## 1. 'useNavigation' Hook
+
+- useNavigate 훅을 활용하여 애플리케이션 내의 다양한 경로로 이동하는 커스텀 훅
+
+```js
+import { useNavigate } from "react-router-dom";
+
+export const useNavigation = () => {
+  const navigate = useNavigate();
+
+  const navigateHome = () => {
+    navigate("/");
+  };
+
+  const navigateSignin = () => {
+    navigate("/signin");
+  };
+
+  const navigateSignup = () => {
+    navigate("/signup");
+  };
+
+  const navigateTodo = () => {
+    navigate("/todo");
+  };
+
+  return { navigateHome, navigateSignin, navigateSignup, navigateTodo };
+};
+```
+
+## 2. 'useValidation' Hook
+
+- 이메일과 비밀번호의 유효성을 검사하는 커스텀 훅
+
+```js
+import { useState } from "react";
+
+// 유효성 검사 기준
+const MIN_PASSWORD_LENGTH = 8;
+
+// 이메일 유효성 검사 함수
+function isEmailValid(email) {
+  return email.includes("@");
+}
+
+// 비밀번호 유효성 검사 함수
+function isPasswordValid(password) {
+  return password.length >= MIN_PASSWORD_LENGTH;
+}
+
+// 유효성 검사 훅
+export function useValidation() {
+  const [emailValid, setEmailValid] = useState(true);
+  const [passwordValid, setPasswordValid] = useState(true);
+
+  const validateEmail = (email) => {
+    setEmailValid(isEmailValid(email));
+  };
+
+  const validatePassword = (password) => {
+    setPasswordValid(isPasswordValid(password));
+  };
+
+  return {
+    emailValid,
+    passwordValid,
+    validateEmail,
+    validatePassword
+  };
+}
+```
+
+## 3. 'useDocumentTitle' Hook
+
+- 문서의 제목을 설정하는 커스텀 훅
+
+```js
+import { useLayoutEffect } from "react";
+
+export const useDocumentTitle = (titleContent) => {
+  useLayoutEffect(() => {
+    document.title = titleContent;
+  }, [titleContent]);
+};
+```
+
+- useLayoutEffect는 리액트 컴포넌트가 렌더링된 이후, 사용자에게 브라우저가 화면에 그림을 그리기 전에 동기적으로 실행되므로, 이 시점에서 문서 제목을 변경하면 화면 깜박임 없이 즉시 반영
+- 또한, titleContent가 변경될 때마다 이 효과를 다시 실행하도록 의존성 배열에 titleContent를 포함
+
+## 4. 'useDarkMode' Hook
+
+- 다크 모드를 관리하기 위한 커스텀 훅
+
+```js
+import { useEffect, useState } from "react";
+
+export function useDarkMode() {
+  const [isDarkModeOn, setIsDarkModeOn] = useState(
+    () => localStorage.theme === "dark"
+  );
+
+  const toggleDarkMode = () => {
+    const isDarkMode = document.documentElement.classList.contains("dark");
+    if (isDarkMode) {
+      document.documentElement.classList.remove("dark");
+      localStorage.theme = "light";
+      setIsDarkModeOn(false);
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.theme = "dark";
+      setIsDarkModeOn(true);
+    }
+  };
+
+  useEffect(() => {
+    if (localStorage.theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else if (localStorage.theme === "light") {
+      document.documentElement.classList.remove("dark");
+    }
+
+    setIsDarkModeOn(localStorage.theme === "dark");
+  }, []);
+
+  return { toggleDarkMode, isDarkModeOn };
+}
+```
+
+- 로컬 스토리지에 저장된 테마 설정(localStorage.theme)을 이용하여 다크 모드가 켜져 있는지 여부를 나타내는 상태 isDarkModeOn을 초기화
+
+```js
+const [isDarkModeOn, setIsDarkModeOn] = useState(
+  () => localStorage.theme === "dark"
+);
+```
+
+- 다크 모드 토글 함수
+  - toggleDarkMode 함수는 현재 다크 모드가 켜져 있는지 여부를 확인하고, 그에 따라 다크 모드를 켜거나 끔
+  - document.documentElement에 'dark' 클래스를 추가하거나 제거하여 CSS에서 사용
+
+```js
+const toggleDarkMode = () => {
+  const isDarkMode = document.documentElement.classList.contains("dark");
+  if (isDarkMode) {
+    document.documentElement.classList.remove("dark");
+    localStorage.theme = "light";
+    setIsDarkModeOn(false);
+  } else {
+    document.documentElement.classList.add("dark");
+    localStorage.theme = "dark";
+    setIsDarkModeOn(true);
+  }
+};
+```
+
+- 페이지 로딩 시 다크 모드 적용
+  - useEffect 훅을 사용하여 페이지가 처음 로딩될 때 로컬 스토리지에서 테마 설정을 읽어와서 다크 모드를 적용
+
+```js
+useEffect(() => {
+  if (localStorage.theme === "dark") {
+    document.documentElement.classList.add("dark");
+  } else if (localStorage.theme === "light") {
+    document.documentElement.classList.remove("dark");
+  }
+
+  setIsDarkModeOn(localStorage.theme === "dark");
+}, []);
+```
